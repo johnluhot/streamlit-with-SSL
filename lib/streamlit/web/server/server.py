@@ -16,7 +16,6 @@ import errno
 import logging
 import os
 import socket
-import ssl
 import sys
 from typing import Any, Awaitable, List, Optional
 
@@ -102,11 +101,7 @@ def start_listening(app: tornado.web.Application) -> None:
     port.  It will error after MAX_PORT_SEARCH_RETRIES attempts.
 
     """
-    # ssl_ctx = get_ssl_context()
-    ssl_ctx = {
-        "certfile": "/Users/jacobpetterle/Downloads/ssl/cert.pem",
-        "keyfile": "/Users/jacobpetterle/Downloads/ssl/privateKey.key",
-    }
+    ssl_ctx = get_ssl_context()
     http_server = HTTPServer(
         app,
         max_buffer_size=config.get_option("server.maxUploadSize") * 1024 * 1024,
@@ -119,13 +114,12 @@ def start_listening(app: tornado.web.Application) -> None:
         start_listening_tcp_socket(http_server)
 
 
-def get_ssl_context() -> Optional[ssl.SSLContext]:
+def get_ssl_context() -> Optional[str]:
     ssl_ctx = None
     ssl_directory_path = config.get_option("server.sslDirectoryPath")
     if ssl_directory_path != "":
         ssl_cert_path = None
         ssl_key_path = None
-        ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         for file in os.listdir(ssl_directory_path):
             if file.endswith(".pem"):
                 ssl_cert_path = os.path.join(ssl_directory_path, file)
@@ -136,8 +130,11 @@ def get_ssl_context() -> Optional[ssl.SSLContext]:
                 f"Unable to locate ssl key or cert files "
                 f"in location '{ssl_directory_path}'"
             )
-        ssl_ctx.load_cert_chain(ssl_cert_path, ssl_key_path)
-    LOGGER.debug("SSL context: '%s'", ssl_ctx)
+        ssl_ctx = {
+            "certfile": ssl_cert_path,
+            "keyfile": ssl_key_path,
+        }
+    LOGGER.debug("SSL options: '%s'", ssl_ctx)
     return ssl_ctx
 
 
