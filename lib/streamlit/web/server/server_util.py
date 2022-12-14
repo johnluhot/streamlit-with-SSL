@@ -94,8 +94,11 @@ def get_url(host_ip: str) -> str:
         base_path = "/" + base_path
 
     host_ip = host_ip.strip("/")
+    protocol_name = "http://"
+    if config.get_option("server.usessl"):
+        protocol_name = "https://"
 
-    return f"http://{host_ip}:{port}{base_path}"
+    return f"{protocol_name}{host_ip}:{port}{base_path}"
 
 
 def _get_browser_address_bar_port() -> int:
