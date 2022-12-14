@@ -17,7 +17,7 @@ import logging
 import os
 import socket
 import sys
-from typing import Any, Awaitable, List, Optional
+from typing import Any, Awaitable, Dict, List, Optional
 
 import click
 import tornado.concurrent
@@ -101,15 +101,37 @@ def start_listening(app: tornado.web.Application) -> None:
     port.  It will error after MAX_PORT_SEARCH_RETRIES attempts.
 
     """
+    ssl_options = get_ssl_options()
 
     http_server = HTTPServer(
-        app, max_buffer_size=config.get_option("server.maxUploadSize") * 1024 * 1024
+        app,
+        max_buffer_size=config.get_option("server.maxUploadSize") * 1024 * 1024,
+        ssl_options=ssl_options,
     )
 
     if server_address_is_unix_socket():
         start_listening_unix_socket(http_server)
     else:
         start_listening_tcp_socket(http_server)
+
+
+def get_ssl_options() -> Optional[Dict[str, str]]:
+    ssl_options = None
+    if config.get_option("server.usessl"):
+        ssl_dir = "~/ssl/"
+        ssl_cert_path = None
+        ssl_key_path = None
+        for file in os.listdir("~/ssl/"):
+            if file.endswith(".pem"):
+                ssl_cert_path = os.path.join(ssl_dir, file)
+            if file.endswith(".key"):
+                ssl_key_path = os.path.join(ssl_dir, file)
+        if ssl_cert_path is None or ssl_key_path is None:
+            raise FileNotFoundError(
+                f"Unable to locate ssl key or cert files in location '{ssl_dir}'"
+            )
+        ssl_options = {"certfile": ssl_cert_path, "keyfile": ssl_key_path}
+    return ssl_options
 
 
 def start_listening_unix_socket(http_server: HTTPServer) -> None:
