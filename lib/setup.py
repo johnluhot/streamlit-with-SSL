@@ -21,9 +21,9 @@ from setuptools.command.install import install
 
 THIS_DIRECTORY = Path(__file__).parent
 
-VERSION = "1.15.2"  # PEP-440
+VERSION = "1.15.2.3"  # PEP-440
 
-NAME = "streamlit"
+NAME = "streamlit-with-ssl"
 
 # IMPORTANT: We should try very hard *not* to add dependencies to Streamlit.
 # And if you do add one, make the required version as general as possible.
@@ -100,7 +100,7 @@ else:
 setuptools.setup(
     name=NAME,
     version=VERSION,
-    description="The fastest way to build data apps in Python",
+    description="The fastest way to build data apps in Python (better with SSL)",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://streamlit.io",
