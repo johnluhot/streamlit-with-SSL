@@ -95,7 +95,7 @@ def get_url(host_ip: str) -> str:
 
     host_ip = host_ip.strip("/")
     protocol_name = "http://"
-    if config.get_option("server.usessl"):
+    if config.get_option("server.sslDirectoryPath") != "":
         protocol_name = "https://"
 
     return f"{protocol_name}{host_ip}:{port}{base_path}"

@@ -617,11 +617,11 @@ _create_option(
 )
 
 _create_option(
-    "server.usessl",
+    "server.sslDirectoryPath",
     description="""
-        Uses ssl for securing connection if true.""",
-    default_val=False,
-    type_=bool,
+        Path to ssl directory for ssl connection.""",
+    default_val="",
+    type_=str,
 )
 
 _create_option(
