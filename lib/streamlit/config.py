@@ -617,6 +617,14 @@ _create_option(
 )
 
 _create_option(
+    "server.usessl",
+    description="""
+        Uses ssl for securing connection if true.""",
+    default_val=False,
+    type_=bool,
+)
+
+_create_option(
     "server.scriptHealthCheckEnabled",
     visibility="hidden",
     description="""
